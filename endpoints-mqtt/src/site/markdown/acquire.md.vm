@@ -1,0 +1,7 @@
+#set( $symbol_pound = '#' )
+${symbol_pound} Setting up the dependencies
+
+Project files are hosted in the [Maven Central Repository][maven-repo], and the [Github Packages Repository][github-repo].
+
+[maven-repo]: ${mavenURL}
+[github-repo]: ${githubArtifactURL}
