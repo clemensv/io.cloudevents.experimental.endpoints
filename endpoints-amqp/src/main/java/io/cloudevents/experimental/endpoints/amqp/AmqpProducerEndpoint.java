@@ -3,6 +3,7 @@ package io.cloudevents.experimental.endpoints.amqp;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 import com.azure.core.amqp.models.AmqpAnnotatedMessage;
@@ -41,14 +42,14 @@ public class AmqpProducerEndpoint extends ProducerEndpoint  {
     }
 
     @Override
-    public void sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception {
-        // TODO Auto-generated method stub
+    public CompletableFuture<Void> sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception {
+        return CompletableFuture.completedFuture(null);
 
     }
     
-    public void sendAsync(AmqpAnnotatedMessage amqpMessage) throws Exception {
+    public CompletableFuture<Void> sendAsync(AmqpAnnotatedMessage amqpMessage) throws Exception {
         // TODO Auto-generated method stub
-
+        return CompletableFuture.completedFuture(null);
     }
     
 }

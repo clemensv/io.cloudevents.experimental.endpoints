@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
-import com.azure.core.amqp.AmqpConnection;
 import com.azure.core.amqp.models.AmqpAnnotatedMessage;
 
 import io.cloudevents.experimental.endpoints.ConsumerEndpoint;

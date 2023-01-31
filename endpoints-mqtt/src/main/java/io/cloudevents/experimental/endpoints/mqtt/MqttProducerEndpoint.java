@@ -3,6 +3,7 @@ package io.cloudevents.experimental.endpoints.mqtt;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 import io.cloudevents.CloudEvent;
@@ -38,19 +39,19 @@ public class MqttProducerEndpoint extends ProducerEndpoint  {
     }
 
     @Override
-    public void sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception {
+    public CompletableFuture<Void> sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception {
         // TODO Auto-generated method stub
-
+        return CompletableFuture.completedFuture(null);
     }
     
-    public void sendAsync(org.eclipse.paho.client.mqttv3.MqttMessage mqttMessage) throws Exception {
+    public CompletableFuture<Void> sendAsync(org.eclipse.paho.client.mqttv3.MqttMessage mqttMessage) throws Exception {
         // TODO Auto-generated method stub
-
+        return CompletableFuture.completedFuture(null);
     }
 
-    public void sendAsync(org.eclipse.paho.mqttv5.common.packet.MqttWireMessage mqttMessage) throws Exception {
+    public CompletableFuture<Void> sendAsync(org.eclipse.paho.mqttv5.common.packet.MqttWireMessage mqttMessage) throws Exception {
         // TODO Auto-generated method stub
-
+        return CompletableFuture.completedFuture(null);
     }
     
 }

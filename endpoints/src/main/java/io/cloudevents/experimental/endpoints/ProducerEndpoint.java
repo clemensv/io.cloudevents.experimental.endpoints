@@ -5,7 +5,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
 
 import io.cloudevents.CloudEvent;
@@ -44,7 +44,7 @@ public abstract class ProducerEndpoint implements AutoCloseable {
 		}
 	}
 
-	public abstract void sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception;
+	public abstract CompletableFuture<Void> sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception;
 
 	@Override
 	public void close() throws Exception {

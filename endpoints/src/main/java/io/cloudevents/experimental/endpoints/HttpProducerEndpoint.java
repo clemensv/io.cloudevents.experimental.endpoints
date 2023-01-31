@@ -3,6 +3,7 @@ package io.cloudevents.experimental.endpoints;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 
@@ -32,7 +33,7 @@ public class HttpProducerEndpoint extends ProducerEndpoint {
 	}
 
 	@Override
-	public void sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception {
+	public CompletableFuture<Void> sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception {
         for (URI endpoint : _endpoints) {
             Future<HttpResponse<Buffer>> responseFuture;
             var request = _webClient.postAbs(endpoint.toString());
@@ -43,13 +44,24 @@ public class HttpProducerEndpoint extends ProducerEndpoint {
                 }
             }
             var writer = VertxMessageFactory.createWriter(request);
-            
+
             if (contentMode == Encoding.BINARY) {
                 responseFuture = writer.writeBinary(cloudEvent); // Use binary mode.
             } else {
-                responseFuture = writer.writeStructured(cloudEvent, JsonFormat.CONTENT_TYPE); 
+                responseFuture = writer.writeStructured(cloudEvent, JsonFormat.CONTENT_TYPE);
             }
-		}
+
+            return responseFuture.toCompletionStage().toCompletableFuture().thenApply(response -> {
+                if (response.statusCode() >= 200 && response.statusCode() < 300) {
+                    return null;
+                } else {
+                    throw new RuntimeException(
+                            "Failed to send event to " + endpoint + ": " + response.statusCode() + " "
+                                    + response.statusMessage());
+                }
+            });
+        }
+        return CompletableFuture.completedFuture(null);
 	}
 
 	@Override
