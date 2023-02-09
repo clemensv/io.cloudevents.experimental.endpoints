@@ -17,10 +17,10 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 
 	private static final Logger LOGGER = Logger.getLogger(ConsumerEndpoint.class.getName());
 
-	private final Logger logger;
+	protected final Logger logger;
 
     public ConsumerEndpoint(Logger logger) {
-        this.logger = logger;
+        this.logger = logger != null ? logger : LOGGER;
     }
     
     public interface DispatchCloudEventAsync {
