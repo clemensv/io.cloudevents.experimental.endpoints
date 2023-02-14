@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
    <modelVersion>4.0.0</modelVersion>
@@ -176,7 +177,6 @@
       <junit.jupiter.version>5.9.1</junit.jupiter.version>
       <mockito.version>4.9.0</mockito.version>
       <log4j.version>2.19.0</log4j.version>
-      <slf4j.version>1.7.25</slf4j.version>
       <cloudevents-exp.version>1.0-SNAPSHOT</cloudevents-exp.version>
       <!-- ============================================== -->
       <!-- ============ PLUGIN CONFIGURATION ============ -->
@@ -213,50 +213,54 @@
    </dependencyManagement>
 
    <dependencies>
-
-      <dependency>
+       <dependency>
          <groupId>org.eclipse.paho</groupId>
          <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
          <version>1.2.5</version>
       </dependency>
-
-
       <dependency>
          <groupId>org.eclipse.paho</groupId>
          <artifactId>org.eclipse.paho.mqttv5.client</artifactId>
          <version>1.2.5</version>
-      </dependency>
-
-
-      
-      <!-- ============================================== -->
-      <!-- ================== LOGGERS =================== -->
-      <!-- ============================================== -->
-      <dependency>
-         <!-- SLF4J API -->
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
-         <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-         <!-- Log4j SLF4J Bridge -->
-         <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-slf4j-impl</artifactId>
-         <version>${log4j.version}</version>
-         <scope>provided</scope>
       </dependency>
       <dependency>
          <groupId>io.cloudevents.experimental</groupId>
          <artifactId>endpoints</artifactId>
          <version>${cloudevents-exp.version}</version>
       </dependency>
+     
+      <!-- ============================================== -->
+      <!-- ================== LOGGERS =================== -->
+      <!-- ============================================== -->
+      <!-- Log4j core -->
       <dependency>
-         <!-- Log4j core -->
          <groupId>org.apache.logging.log4j</groupId>
          <artifactId>log4j-core</artifactId>
          <version>${log4j.version}</version>
          <scope>provided</scope>
       </dependency>
+      <!-- Log4j API -->
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-api</artifactId>
+         <version>${log4j.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <!-- Log4j JUL bridge -->
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-jul</artifactId>
+         <version>${log4j.version}</version>
+         <scope>provided</scope>
+      </dependency>      
+      <!-- Log4j SLF bridge -->
+      <dependency>
+         <groupId>org.apache.logging.log4j</groupId>
+         <artifactId>log4j-slf4j-impl</artifactId>
+         <version>${log4j.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      
       <!-- ============================================== -->
       <!-- ======= TEST ENVIRONMENT DEPENDENCIES ======== -->
       <!-- ============================================== -->
@@ -286,6 +290,24 @@
          <version>${mockito.version}</version>
          <scope>test</scope>
       </dependency>
+      <dependency>
+         <groupId>org.testcontainers</groupId>
+         <artifactId>testcontainers</artifactId>
+         <version>1.17.6</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.testcontainers</groupId>
+         <artifactId>junit-jupiter</artifactId>
+         <version>1.17.6</version>
+         <scope>test</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.junit-pioneer</groupId>
+         <artifactId>junit-pioneer</artifactId>
+         <version>2.0.0</version>
+         <scope>test</scope>
+      </dependency>
    </dependencies>
 
    <!-- ********************************************** -->
@@ -300,18 +322,18 @@
             <artifactId>maven-resources-plugin</artifactId>
             <version>3.1.0</version>
             <configuration>
-              <encoding>UTF-8</encoding>
+               <encoding>UTF-8</encoding>
             </configuration>
-          </plugin>
+         </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.10.1</version>
             <configuration>
                <release>17</release>
-              <encoding>UTF-8</encoding>
+               <encoding>UTF-8</encoding>
             </configuration>
-          </plugin>
+         </plugin>
          <plugin>
             <!-- Changes -->
             <!-- Takes care of the changes log -->

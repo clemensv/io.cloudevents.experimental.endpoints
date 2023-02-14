@@ -1,16 +1,17 @@
-package io.cloudevents.experimental.endpoints;
+package io.cloudevents.experimental.endpoints.http;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-import org.slf4j.Logger;
-
 import io.cloudevents.CloudEvent;
 import io.cloudevents.core.format.EventFormat;
 import io.cloudevents.jackson.JsonFormat;
 import io.cloudevents.core.message.Encoding;
+import io.cloudevents.experimental.endpoints.IEndpointCredential;
+import io.cloudevents.experimental.endpoints.IHeaderEndpointCredential;
+import io.cloudevents.experimental.endpoints.ProducerEndpoint;
 import io.cloudevents.http.vertx.VertxMessageFactory;
 import io.vertx.core.Future;
 import io.vertx.core.Vertx;
@@ -22,18 +23,27 @@ public class HttpProducerEndpoint extends ProducerEndpoint {
 
 	final Vertx _vertx = Vertx.vertx();
     final WebClient _webClient = WebClient.create(_vertx);
-	private Logger _logger;
+	
 	private IEndpointCredential _credential;
 	private List<URI> _endpoints;
 
-	public HttpProducerEndpoint(Logger logger, IEndpointCredential credential, Map<String, String> options, List<URI> endpoints) {
-		this._logger = logger;
-		this._credential = credential;
+    public HttpProducerEndpoint(IEndpointCredential credential, Map<String, String> options, List<URI> endpoints) {
+        this._credential = credential;
         this._endpoints = endpoints;
-	}
+    }
+    
+    public static void register() {
+
+        addProducerEndpointFactoryHook((credential, protocol, options, endpoints) -> {
+            if (protocol.toLowerCase().startsWith("http")) {
+                return new HttpProducerEndpoint(credential, options, endpoints);
+            }
+            return null;
+        });
+    }
 
 	@Override
-	public CompletableFuture<Void> sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) throws Exception {
+	public CompletableFuture<Void> sendAsync(CloudEvent cloudEvent, Encoding contentMode, EventFormat formatter) {
         for (URI endpoint : _endpoints) {
             Future<HttpResponse<Buffer>> responseFuture;
             var request = _webClient.postAbs(endpoint.toString());
@@ -65,8 +75,13 @@ public class HttpProducerEndpoint extends ProducerEndpoint {
 	}
 
 	@Override
-	public void close() throws Exception {
-		_webClient.close();
+    public void close() {
+        _webClient.close();
+        _vertx.close();
 	}
 
 }
+
+
+
+

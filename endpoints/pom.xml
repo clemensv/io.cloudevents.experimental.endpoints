@@ -176,7 +176,7 @@
       <junit.jupiter.version>5.9.1</junit.jupiter.version>
       <mockito.version>4.9.0</mockito.version>
       <log4j.version>2.19.0</log4j.version>
-      <slf4j.version>1.7.25</slf4j.version>
+      
       <!-- ============================================== -->
       <!-- ============ PLUGIN CONFIGURATION ============ -->
       <!-- ============================================== -->
@@ -252,15 +252,9 @@
       <!-- ================== LOGGERS =================== -->
       <!-- ============================================== -->
       <dependency>
-         <!-- SLF4J API -->
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-api</artifactId>
-         <version>${slf4j.version}</version>
-      </dependency>
-      <dependency>
-         <!-- Log4j SLF4J Bridge -->
+         <!-- Log4j API -->
          <groupId>org.apache.logging.log4j</groupId>
-         <artifactId>log4j-slf4j-impl</artifactId>
+         <artifactId>log4j-api</artifactId>
          <version>${log4j.version}</version>
          <scope>provided</scope>
       </dependency>

@@ -8,23 +8,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.BiFunction;
-import java.util.logging.Logger;
+
 
 import io.cloudevents.CloudEvent;
 
 public abstract class ConsumerEndpoint implements AutoCloseable {
 
-	private static final Logger LOGGER = Logger.getLogger(ConsumerEndpoint.class.getName());
-
-	protected final Logger logger;
-
-    public ConsumerEndpoint(Logger logger) {
-        this.logger = logger != null ? logger : LOGGER;
+    public ConsumerEndpoint() {
     }
     
     public interface DispatchCloudEventAsync {
-        void onEvent(CloudEvent event, Logger logger);
+        void onEvent(CloudEvent event);
     }
     
     private final Set<DispatchCloudEventAsync> subscribers = new HashSet<>();
@@ -44,15 +38,15 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 	protected <T> void deliver(T message) {
 		if (message instanceof CloudEvent) {
 			for (DispatchCloudEventAsync subscriber : subscribers) {
-                subscriber.onEvent((CloudEvent)message, logger);
+                subscriber.onEvent((CloudEvent)message);
             }
 		}
 	}
 
-	public static ConsumerEndpoint create(Logger logger, IEndpointCredential credential, String protocol, Map<String, String> options,
+	public static ConsumerEndpoint create(IEndpointCredential credential, String protocol, Map<String, String> options,
 			List<URI> endpoints) {
 		for (ConsumerEndpointFactoryHandler hook : _consumerEndpointFactoryHooks) {
-			ConsumerEndpoint ep = hook.invoke(logger, credential, protocol, options, endpoints);
+			ConsumerEndpoint ep = hook.invoke(credential, protocol, options, endpoints);
 			if (ep != null) {
 				return ep;
 			}
@@ -75,14 +69,8 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 	}
 
 	public interface ConsumerEndpointFactoryHandler {
-		ConsumerEndpoint invoke(Logger logger, IEndpointCredential credential, String protocol, Map<String, String> options,
+		ConsumerEndpoint invoke(IEndpointCredential credential, String protocol, Map<String, String> options,
 				List<URI> endpoints);
-	}
-
-	@Override
-	public void close() throws Exception {
-		// TODO Auto-generated method stub
-
 	}
 
 }
