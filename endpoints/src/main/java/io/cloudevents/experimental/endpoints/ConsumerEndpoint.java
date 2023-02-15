@@ -58,7 +58,11 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 	/**
 	 * This is the callback interface used for delivering CloudEvents to subscribers.
 	 */
-    public interface DispatchCloudEventAsync {
+	public interface DispatchCloudEventAsync {
+		/**
+		 * Deliver a CloudEvent to the subscriber.
+		 * @param event The CloudEvent to deliver.	
+		 */ 
         void onEvent(CloudEvent event);
     }
     
@@ -66,6 +70,7 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 
 	/**
 	 * Subscribe to receive CloudEvents from this consumer endpoint.
+	 * @param subscriber the subscriber
 	 */
 	public void subscribe(DispatchCloudEventAsync subscriber) {
 		subscribers.add(subscriber);
@@ -73,6 +78,7 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 
 	/**
 	 * Unsubscribe from receiving CloudEvents from this consumer endpoint.
+	 * @param subscriber the subscriber
 	 */
 	public void unsubscribe(DispatchCloudEventAsync subscriber) {
 		subscribers.remove(subscriber);
@@ -80,14 +86,21 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 
 	/**
 	 * Start the consumer endpoint.
+	 * @return A future that will be completed when the consumer endpoint has
 	 */
 	public abstract CompletableFuture<Void> startAsync();
 
 	/**
 	 * Stop the consumer endpoint.
+	 * @return A future that will be completed when the consumer endpoint has
 	 */
 	public abstract CompletableFuture<Void> stopAsync();
 
+	/**
+	 * Deliver a message to the subscribers.
+	 * @param message The message to deliver.
+	 * @param <T> The type of the message.
+	 */
 	protected <T> void deliver(T message) {
 		if (message instanceof CloudEvent) {
 			for (DispatchCloudEventAsync subscriber : subscribers) {
@@ -114,6 +127,7 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 	 * @param endpoints The list of endpoint URIs. The endpoint URI requirements
 	 * are defined by the provider of the consumer endpoint implementation.
 	 * Usually, the list of endpoints will contain a single endpoint. 
+	 * @return A consumer endpoint instance.
 	 */
 	public static ConsumerEndpoint create(IEndpointCredential credential, String protocol, Map<String, String> options,
 			List<URI> endpoints) {
@@ -152,6 +166,14 @@ public abstract class ConsumerEndpoint implements AutoCloseable {
 	 * This is the callback interface used for creating a consumer endpoint instance.
 	 */
 	public interface ConsumerEndpointFactoryHandler {
+		/**
+		 * Create a consumer endpoint instance.
+		 * @param credential a credential for authenticating with the endpoint. The
+		 * @param protocol The protocol name and version, e.g. "HTTP". The
+		 * @param options The protocol-specific options. The options are defined by
+		 * @param endpoints The list of endpoint URIs. The endpoint URI requirements
+		 * @return A consumer endpoint instance or null if the hook does not support
+		 */
 		ConsumerEndpoint invoke(IEndpointCredential credential, String protocol, Map<String, String> options,
 				List<URI> endpoints);
 	}

@@ -62,8 +62,6 @@
    </ciManagement>
 
 
-
-
    <modules>
       <module>endpoints</module>
       <module>endpoints-amqp</module>
@@ -76,6 +74,14 @@
       <mockito.version>4.9.0</mockito.version>
       <log4j.version>2.19.0</log4j.version>
       <jgitver-maven-plugin.version>1.5.1</jgitver-maven-plugin.version>
+      <maven.resources.version>3.1.0</maven.resources.version>
+      <maven.compiler.version>3.10.1</maven.compiler.version>
+      <maven.surefire.version>3.0.0-M9</maven.surefire.version>      
+      <maven.failsafe.version>3.0.0-M5</maven.failsafe.version>
+      <hamcrest.version>1.3</hamcrest.version>
+      <junit.platform.version>1.9.1</junit.platform.version>
+      <slf4j.version>1.7.30</slf4j.version>      
+      <testcontainers.version>1.17.6</testcontainers.version>
    </properties>
 
    <build>
@@ -84,11 +90,11 @@
             <groupId>fr.brouillard.oss</groupId>
             <artifactId>jgitver-maven-plugin</artifactId>
             <version>${jgitver-maven-plugin.version}</version>
-          </plugin>
+         </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-resources-plugin</artifactId>
-            <version>3.1.0</version>
+            <version>${maven.resources.version}</version>
             <configuration>
                <encoding>UTF-8</encoding>
             </configuration>
@@ -96,7 +102,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.10.1</version>
+            <version>${maven-compiler.version}</version>
             <configuration>
                <release>17</release>
                <source>17</source>
@@ -106,7 +112,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-surefire-plugin</artifactId>
-            <version>3.0.0-M9</version>
+            <version>${maven.surefire.version}</version>
             <configuration>
                <includes>
                   <include>**/*Test.java</include>
@@ -118,16 +124,16 @@
             </configuration>
             <dependencies>
                <dependency>
-                   <groupId>org.junit.jupiter</groupId>
-                   <artifactId>junit-jupiter-engine</artifactId>
-                   <version>5.9.1</version>
+                  <groupId>org.junit.jupiter</groupId>
+                  <artifactId>junit-jupiter-engine</artifactId>
+                  <version>${junit.jupiter.version}</version>
                </dependency>
-           </dependencies>
+            </dependencies>
          </plugin>
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-failsafe-plugin</artifactId>
-            <version>3.0.0-M5</version>
+            <version>${maven.failsafe.version}</version>
             <configuration>
                <includes>
                   <include>**/*IT.java</include>
@@ -144,13 +150,13 @@
             </executions>
             <dependencies>
                <dependency>
-                   <groupId>org.junit.jupiter</groupId>
-                   <artifactId>junit-jupiter-engine</artifactId>
-                   <version>5.9.1</version>
+                  <groupId>org.junit.jupiter</groupId>
+                  <artifactId>junit-jupiter-engine</artifactId>
+                  <version>${junit.jupiter.version}</version>
                </dependency>
-           </dependencies>
+            </dependencies>
          </plugin>
-        
+
       </plugins>
    </build>
 
@@ -176,20 +182,20 @@
             <!-- Hamcrest BOM -->
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-all</artifactId>
-            <version>1.3</version>
+            <version>${hamcrest.version}</version>
             <type>pom</type>
             <scope>import</scope>
          </dependency>
          <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
+            <version>${slf4j.version}</version>
          </dependency>
       </dependencies>
    </dependencyManagement>
 
    <dependencies>
-        <!-- ============================================== -->
+      <!-- ============================================== -->
       <!-- ================== LOGGERS =================== -->
       <!-- ============================================== -->
       <!-- Log4j core -->
@@ -212,7 +218,7 @@
          <artifactId>log4j-jul</artifactId>
          <version>${log4j.version}</version>
          <scope>provided</scope>
-      </dependency>      
+      </dependency>
       <!-- Log4j SLF bridge -->
       <dependency>
          <groupId>org.apache.logging.log4j</groupId>
@@ -220,21 +226,21 @@
          <version>${log4j.version}</version>
          <scope>provided</scope>
       </dependency>
-      
+
       <!-- TEST ENVIRONMENT DEPENDENCIES -->
       <dependency>
          <!-- JUnit Jupiter -->
          <groupId>org.junit.jupiter</groupId>
          <artifactId>junit-jupiter</artifactId>
-         <version>5.9.1</version>
+         <version>${junit.jupiter.version}</version>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.junit.platform</groupId>
          <artifactId>junit-platform-suite-engine</artifactId>
-         <version>1.9.1</version>
+         <version>${junit.platform.version}</version>
          <scope>test</scope>
-     </dependency>
+      </dependency>
       <dependency>
          <!-- Mockito -->
          <groupId>org.mockito</groupId>
@@ -245,27 +251,21 @@
       <dependency>
          <groupId>org.testcontainers</groupId>
          <artifactId>testcontainers</artifactId>
-         <version>1.17.6</version>
+         <version>${testcontainers.version}</version>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.testcontainers</groupId>
          <artifactId>junit-jupiter</artifactId>
-         <version>1.17.6</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.junit-pioneer</groupId>
-         <artifactId>junit-pioneer</artifactId>
-         <version>2.0.0</version>
+         <version>${testcontainers.version}</version>
          <scope>test</scope>
       </dependency>
       <dependency>
          <groupId>org.junit.jupiter</groupId>
          <artifactId>junit-jupiter-engine</artifactId>
-         <version>5.9.1</version>
+         <version>${junit.jupiter.version}</version>
          <scope>test</scope>
-     </dependency>
+      </dependency>
    </dependencies>
 
    <!-- configuration to execute all tests for all modules -->
@@ -309,4 +309,30 @@
          </build>
       </profile>
    </profiles>
+
+   <reporting>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-project-info-reports-plugin</artifactId>
+            <version>3.1.1</version>
+            <reportSets>
+               <reportSet>
+                  <reports>
+                     <report>dependencies</report>
+                  </reports>
+               </reportSet>
+            </reportSets>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.4.1</version>
+            <configuration>
+               <source>17</source>
+               <doclint>none</doclint>
+            </configuration>
+         </plugin>
+      </plugins>
+   </reporting>
 </project>

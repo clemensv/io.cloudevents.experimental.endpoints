@@ -1,6 +1,10 @@
 
 package io.cloudevents.experimental.endpoints;
 
+/**
+ * This implements a plain endpoint credential with a client ID and a client
+ * secret.   
+ */
 public class PlainEndpointCredential implements IEndpointCredential {
 	private String clientId;
 	private String clientSecret;
@@ -18,6 +22,7 @@ public class PlainEndpointCredential implements IEndpointCredential {
 
 	/**
 	 * The client ID.
+	 * @return The client ID.
 	 */
 	public String getClientId() {
 		return clientId;
@@ -25,6 +30,7 @@ public class PlainEndpointCredential implements IEndpointCredential {
 
 	/**
 	 * The client secret.
+	 * @return The client secret.
 	 */
 	public String getClientSecret() {
 		return clientSecret;

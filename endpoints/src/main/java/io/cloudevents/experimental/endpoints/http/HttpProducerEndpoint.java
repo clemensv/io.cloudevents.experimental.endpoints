@@ -34,13 +34,23 @@ public class HttpProducerEndpoint extends ProducerEndpoint {
     final WebClient _webClient = WebClient.create(_vertx);
 	
 	private IEndpointCredential _credential;
-	private List<URI> _endpoints;
+    private List<URI> _endpoints;
 
-    public HttpProducerEndpoint(IEndpointCredential credential, Map<String, String> options, List<URI> endpoints) {
+    /**
+     * Constructor.
+     * @param credential a credential for authenticating with the endpoint. The
+     * @param options a map of protocol-specific options.
+     * @param endpoints a list of endpoints to send events to.
+     */
+    HttpProducerEndpoint(IEndpointCredential credential, Map<String, String> options, List<URI> endpoints) {
         this._credential = credential;
         this._endpoints = endpoints;
     }
-    
+ 
+    /**
+     * Register the HTTP producer endpoint implementation with the producer endpoint
+     * factory.
+     */
     public static void register() {
 
         addProducerEndpointFactoryHook((credential, protocol, options, endpoints) -> {

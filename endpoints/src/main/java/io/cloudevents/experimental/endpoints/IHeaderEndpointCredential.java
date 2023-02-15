@@ -10,6 +10,7 @@ import java.util.Map;
 public interface IHeaderEndpointCredential extends IEndpointCredential {
     /**
      * The header map.
+     * @return The header map.
      */
     public Map<String, String> getHeaders();
 }

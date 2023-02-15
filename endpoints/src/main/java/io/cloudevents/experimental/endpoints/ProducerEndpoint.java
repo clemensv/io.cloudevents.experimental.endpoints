@@ -23,7 +23,7 @@ import io.cloudevents.core.message.Encoding;
  * The factory method {@link #create(IEndpointCredential, String, Map, List)} is
  * used to create a producer endpoint instance.
  * 
- * The {@link #sendAsync(CloudEvent, EventFormat, Encoding)} method is used to
+ * The {@link #sendAsync(CloudEvent, Encoding, EventFormat)} method is used to
  * send a CloudEvent to a consumer endpoint using a specific event format and
  * encoding. The send operation is asynchronous and returns a future that will
  * be
@@ -122,6 +122,14 @@ public abstract class ProducerEndpoint implements AutoCloseable {
 	 * The callback interface for producer endpoint factory hooks.
 	 */
 	public static interface ProducerEndpointFactoryHandler {
+		/**
+		 * Create a producer endpoint instance if the hook can handle the
+		 * @param credential a credential for authenticating with the endpoint. The
+		 * @param protocol The protocol name and version, e.g. "HTTP/1.1". The
+		 * @param options The protocol-specific options. The options are defined by
+		 * @param endpoints The list of endpoint URIs. The endpoint URI requirements
+		 * @return The producer endpoint instance or null if the hook cannot handle
+		 */
 		ProducerEndpoint invoke(IEndpointCredential credential, String protocol, Map<String, String> options,
 				List<URI> endpoints);
 	}
