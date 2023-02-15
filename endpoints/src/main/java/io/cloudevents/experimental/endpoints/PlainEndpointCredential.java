@@ -1,5 +1,4 @@
 
-// Path: endpoints\src\main\java\io\cloudevents\experimental\endpoints\PlainEndpointCredential.java
 package io.cloudevents.experimental.endpoints;
 
 public class PlainEndpointCredential implements IEndpointCredential {
@@ -31,6 +30,3 @@ public class PlainEndpointCredential implements IEndpointCredential {
 		return clientSecret;
 	}
 }
-
-
-// create a unit test for PlainEndpointCredential.java

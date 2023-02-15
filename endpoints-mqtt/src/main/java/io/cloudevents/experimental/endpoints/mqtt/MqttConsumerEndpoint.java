@@ -1,5 +1,4 @@
-// implement the stubs using Eclipse Paho MQTT client:
-
+// Copyright (c) Cloud Native Computing Foundation. See LICENSE for details
 package io.cloudevents.experimental.endpoints.mqtt;
 
 import java.net.URI;
@@ -27,6 +26,108 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
+/**
+ * This class is a consumer endpoint implementation that uses MQTT 3.1.1 or MQTT
+ * 5.0 as the transport. The class uses the Eclipse Paho MQTT library the MQTT
+ * protocol support.
+ * 
+ * The class does not have a public constructor. Instead, instances are 
+ * created by calling the static {@link io.cloudevents.experimental.endpoints.ConsumerEndpoint#create(IEndpointCredential, Map, List)}
+ * factory method on the base class.
+ * 
+ * The MQTT protocol support must be registered with the factory by calling the
+ * static {@link MqttProtocol#register()} method once during application startup.
+ * 
+ * See the {@link io.cloudevents.experimental.endpoints.ConsumerEndpoint} class for
+ * more information about the common message model and the factory.
+ * 
+ * The "options" parameter to the factory method is optionally used to specify
+ * MQTT-specific options. The following options are supported:
+ * - "topic" - the MQTT topic to subscribe to. If not specified, the topic is 
+ *   taken from the "path" portion of the endpoint URI. 
+ * - "qos" - the MQTT quality of service level to use. If not specified, the
+ *   default value of 0 is used.
+ * 
+ * The "protocol" parameter to the factory method is used to specify the MQTT
+ * protocol version to use. The following values are supported:
+ * - "mqtt" - MQTT 5.0
+ * - "mqtt/3.1.1" - MQTT 3.1.1
+ * - "mqtt/5.0" - MQTT 5.0
+ * 
+ * The "endpoints" parameter to the factory method is used to specify the MQTT
+ * broker endpoints to connect to. Only one endpoint is permitted. The URI scheme
+ * must be "mqtt" or "mqtts". If the scheme is "mqtts", the endpoint is configured to 
+ * use TLS.  
+ * 
+ * In addition to the CloudEvents message model, the MQTT consumer endpoint also
+ * supports MQTT messages (PUBLISH packets) directly. 
+ * 
+ * As with the underlying Paho MQTT library, MQTT 5.0 and MQTT 3.1.1 are handled 
+ * separately. 
+ * 
+ * For MQTT 5.0, MQTT messages are first delivered to subscribers who registered
+ * by calling the {@link #subscribe(DispatchMqttV5MessageAsync) } method. The
+ * subscriber provides a callback interface implementation. The
+ * {@link DispatchMqttV5MessageAsync#onMessage(org.eclipse.paho.mqttv5.common.MqttMessage) } callback
+ * method is invoked with the MQTT message. 
+ * 
+ * For MQTT 3.1.1, MQTT messages are first delivered to subscribers who registered
+ * by calling the {@link #subscribe(DispatchMqttV3MessageAsync) } method. The
+ * subscriber provides a callback interface implementation. The
+ * {@link DispatchMqttV3MessageAsync#onMessage(MqttMessage) } callback
+ * method is invoked with the MQTT message. 
+ * 
+ * If the message is CloudEvents compliant, either in binary or structured mode
+ * as indicated by the content-type, it will be converted and delivered to the
+ * CloudEvents subscribers. 
+ * 
+ * If the QoS level is 1 or 2, the message will be acknowledged by the endpoint
+ * after it has been delivered to all subscribers and no exception has been
+ * thrown.
+ * 
+ * CloudEvents Example:
+ * 
+ * <pre>
+ * {@code
+ * // Create a consumer endpoint that connects to the MQTT broker at
+ * // "mqtt://localhost:1883" and attaches to the "mytopic" node.
+ * 
+ * var credential = new PlainEndpointCredential("username", "password");
+ * var endpoint = ConsumerEndpoint.create(
+ *                      credential, "mqtt", 
+ *                      Map.of("topic", "mytopic"), 
+ *                      List.of(URI.create("mqtt://localhost:1883")));
+ * endpoint.subscribe((cloudEvent) -> {
+ *    // Handle the event
+ * });
+ * endpoint.startAsync();
+ * }
+ * </pre>
+ * 
+ * MQTT 5.0 Example:
+ * 
+ * <pre>
+ * {@code
+ * // Create a consumer endpoint that connects to the MQTT broker at
+ * // "mqtt://localhost:1883" and attaches to the "mytopic" node.
+ * 
+ * var credential = new PlainEndpointCredential("username", "password");
+ * var endpoint = ConsumerEndpoint.create(
+ *                      credential, "mqtt", 
+ *                      Map.of("topic", "mytopic"), 
+ *                      List.of(URI.create("mqtt://localhost:1883")));
+ * 
+ * // Register a subscriber for MQTT messages
+ * endpoint.subscribe(new DispatchMqttV5MessageAsync() {
+ *    public void onMessage(org.eclipse.paho.mqttv5.common.MqttMessage message) {
+ *      // Handle the message
+ *   }
+ * });
+ * endpoint.startAsync();
+ * 
+ * 
+ * @see io.cloudevents.experimental.endpoints.ConsumerEndpoint
+ */
 public class MqttConsumerEndpoint extends ConsumerEndpoint {
 
     private static final Logger logger = LogManager.getLogger(MqttConsumerEndpoint.class);

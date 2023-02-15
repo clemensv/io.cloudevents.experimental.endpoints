@@ -19,6 +19,15 @@ import io.vertx.core.buffer.Buffer;
 import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 
+/**
+ * This class is a producer endpoint implementation that uses HTTP as the
+ * transport.
+ * 
+ * The implementation uses the Vert.x Web Client and the CloudEvents SDK Vert.x 
+ * message factory.
+ * 
+ * The implementation supports both structured and binary encoding.
+ */
 public class HttpProducerEndpoint extends ProducerEndpoint {
 
 	final Vertx _vertx = Vertx.vertx();

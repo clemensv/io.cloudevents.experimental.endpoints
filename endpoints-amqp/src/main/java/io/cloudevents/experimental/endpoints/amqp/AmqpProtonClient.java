@@ -38,6 +38,11 @@ import org.apache.qpid.proton.reactor.Reactor;
 import io.cloudevents.experimental.endpoints.IEndpointCredential;
 import io.cloudevents.experimental.endpoints.PlainEndpointCredential;
 
+
+/**
+ * This class implements a simplified client for AMQP 1.0 wrapping the Proton-J
+ * library. It is used by the AMQP 1.0 endpoint implementations.
+ */
 public class AmqpProtonClient {
     private Connection _connection;
     private URI _endpoint;
@@ -49,6 +54,7 @@ public class AmqpProtonClient {
     private Reactor _reactor;
     private Thread _reactorThread;
     private CompletableFuture<Connection> _connectionFuture;
+
 
     public static class BufferPool {
         private final int bufferSize;
@@ -75,12 +81,21 @@ public class AmqpProtonClient {
         }
     }
 
+    /**
+     * Creates a new instance of the AmqpProtonClient class.
+     * @param endpoint The endpoint URI.
+     * @param credential The endpoint credential to use.
+     */
     public AmqpProtonClient(URI endpoint, IEndpointCredential credential) {
         this._endpoint = endpoint;
         this._credential = credential;
         this._connectionFuture = new CompletableFuture<>();
     }
 
+
+    /** 
+     * This handler is used to process events from the Proton-J reactor.
+     */
     class ReactorHandler extends BaseHandler {
 
         private AmqpProtonClient client;
@@ -91,6 +106,9 @@ public class AmqpProtonClient {
             add(new FlowController());
         }
 
+        /**
+         * initilaizes the connection to the AMQP 1.0 endpoint.
+         */
         @Override
         public void onReactorInit(Event event) {
             _reactor = event.getReactor();
@@ -98,12 +116,18 @@ public class AmqpProtonClient {
             _logger.info(String.format("connecting to %s:%d", client._endpoint.getHost(), client._endpoint.getPort()));
         }
 
+        /**
+         * This method is called when the connection has 
+         * been bound to the transport, but before the 
+         * connection has been opened. 
+         */
         @Override
         public void onConnectionBound(Event event) {
 
             var connection = event.getConnection();
             Transport transport = connection.getTransport();
             try {
+                // configure TLS if the endpoint uses the amqps scheme
                 if (client._endpoint.getScheme().equals("amqps")) {
                     var sslContext = SSLContext.getInstance("TLSv1.2");
                     var sslDomain = Proton.sslDomain();
@@ -114,6 +138,7 @@ public class AmqpProtonClient {
                     _logger.info("using TLS");
                 }
 
+                // configure SASL if we know how to configure the credential
                 var sasl = transport.sasl();
                 sasl.setRemoteHostname(connection.getHostname());
                 if (client._credential instanceof PlainEndpointCredential) {
@@ -138,6 +163,9 @@ public class AmqpProtonClient {
 
     }
 
+    /** 
+     * Initializes the Proton-J reactor.
+     */
     private synchronized void initReactor(CoreHandler handler) throws IOException {
         if (_reactor != null) {
             return;
@@ -154,6 +182,9 @@ public class AmqpProtonClient {
         runReactor();
     }
 
+    /**
+     * Runs the Proton-J reactor in a separate thread.
+     */
     private void runReactor() {
         _reactorThread = new Thread(() -> {
             try {
@@ -165,6 +196,14 @@ public class AmqpProtonClient {
         _reactorThread.start();
     }
 
+    /** 
+     * Creates an AMQP message subscriber instance.
+     * @param node The node to subscribe to. This may be the address of a queue
+     * or a topic or a durable topic subscription. The address is interpreted
+     * by the AMQP 1.0 endpoint.
+     * @param handler The message handler to use.
+     * @return The AMQP message subscriber instance.
+     */
     public AmqpProtonSubscriber createSubscriber(String node, MessageHandler handler) throws Exception {
         _logger.info(String.format("creating subscriber for node: %s", node));
         var sub = new SubscriberImpl(this, node, handler);
@@ -172,6 +211,12 @@ public class AmqpProtonClient {
         return sub;
     }
 
+    /** 
+     * Creates an AMQP message sender instance.
+     * @param node The node to send messages to. This may be the address of a queue
+     * or a topic. The address is interpreted by the AMQP 1.0 endpoint.
+     * @return The AMQP message sender instance.
+     */
     public AmqpProtonSender createSender(String node) throws Exception {
         _logger.info(String.format("creating sender for node: %s", node));
         var sender = new SenderImpl(this, node);
@@ -179,6 +224,10 @@ public class AmqpProtonClient {
         return sender;
     }
 
+    /** 
+     * Implements AmqpProtonSender
+     * @see AmqpProtonSender
+     */
     public class SenderImpl extends ReactorHandler implements AmqpProtonSender {
         private String node;
         private CompletableFuture<Sender> _senderFuture = new CompletableFuture<>();
@@ -188,6 +237,10 @@ public class AmqpProtonClient {
             this.node = node;
         }
 
+        /**
+         * This method is called when the network connection has been
+         * established and the AMQP connection needs to be initialized.
+         */
         @Override
         public void onConnectionInit(Event event) {
             try {
@@ -211,6 +264,11 @@ public class AmqpProtonClient {
             }
         }
 
+        /** 
+         * Sends a message.
+         * @param amqpMessage The message to send.
+         * @return A future that completes when the message has been sent.
+         */
         public CompletableFuture<Void> sendAsync(Message amqpMessage) {
             try {
                 var sender = _senderFuture.get();
@@ -243,6 +301,10 @@ public class AmqpProtonClient {
 
     }
 
+    /** 
+     * Implements AmqpProtonSubscriber
+     * @see AmqpProtonSubscriber
+     */
     public class SubscriberImpl extends ReactorHandler implements AmqpProtonSubscriber {
         private MessageHandler handler;
         private String node;
@@ -254,6 +316,10 @@ public class AmqpProtonClient {
             this.node = node;
         }
 
+        /**
+         * This method is called when the network connection has been
+         * established and the AMQP connection needs to be initialized.
+         */
         @Override
         public void onConnectionInit(Event event) {
             try {
@@ -277,6 +343,9 @@ public class AmqpProtonClient {
             }
         }
 
+        /**
+         * This method is called when a message has been received.
+         */
         @Override
         public void onDelivery(Event event) {
             var delivery = event.getDelivery();
@@ -290,10 +359,13 @@ public class AmqpProtonClient {
                     int read = receiver.recv(buffer.array(), 0, buffer.capacity());
                     if (read > 0) {
                         buffer.flip();
+
+                        // decode the message
                         Message amqpMessage = Proton.message();
                         amqpMessage.decode(buffer.array(), 0, read);
 
                         try {
+                            // create a context that can be used to accept/reject/release the message
                             var handlerContext = new MessageContext() {
                                 boolean isSettled = false;
 
@@ -343,7 +415,8 @@ public class AmqpProtonClient {
                             AmqpProtonSubscriber subscriber = (AmqpProtonSubscriber) receiver.getContext();
                             subscriber.getHandler().handle(amqpMessage, handlerContext);
                             if (!handlerContext.getIsSettled() && !delivery.remotelySettled()) {
-                                delivery.disposition(Accepted.getInstance());
+                                // if the handler did not settle the message, we will reject it
+                                delivery.disposition(new Rejected());
                             }
                         } catch (Exception e) {
                             _logger.error(
@@ -360,6 +433,7 @@ public class AmqpProtonClient {
                 BUFFER_POOL.returnBuffer(buffer);
             }
         }
+
 
         public MessageHandler getHandler() {
             return handler;

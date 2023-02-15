@@ -1,5 +1,11 @@
 /*package io.cloudevents.experimental.endpoints.mqtt;
 
+Sad story: 
+
+This is an attempt to map the Paho MQTT client API to the Java 8
+CompletableFuture API. Unfortunately, I was not able to make it work yet due
+some obscure interactions of thread pool and timing issues between
+CompletableFuture and Paho.
 
 import java.util.concurrent.CompletableFuture;
 
