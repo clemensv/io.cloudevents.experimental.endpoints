@@ -33,14 +33,17 @@ public class TestMosquittoE2E {
     public static void setup() {
         MqttProtocol.register();
         Log4jBridgeHandler.install(true, null, false);
+        // create a temp dir
+        var tmpdir = System.getProperty("java.io.tmpdir");
+        logger.info("Temp dir: " + tmpdir);
     }
 
     @Container
     private static GenericContainer<?> environment = new GenericContainer<>(
-            "eclipse-mosquitto:2.0.15")
+            "eclipse-mosquitto:2.0.18")
             .withExposedPorts(1883)
             .withClasspathResourceMapping("mosquitto-config", "/mosquitto/config", BindMode.READ_ONLY)
-            .withFileSystemBind(System.getProperty("java.io.tmpdir"), "/mosquitto/log")
+            //.withFileSystemBind(System.getProperty("java.io.tmpdir"), "/mosquitto/log", BindMode.READ_WRITE)
             .withLogConsumer(outputFrame -> {
                 logger.info(outputFrame.getUtf8String());
             })
