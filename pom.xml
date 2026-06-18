@@ -71,7 +71,7 @@
    <properties>
       <io.cloudevents.experimental.version>${project.version}</io.cloudevents.experimental.version>
       <junit.jupiter.version>5.10.2</junit.jupiter.version>
-      <mockito.version>5.11.0</mockito.version>
+      <mockito.version>5.23.0</mockito.version>
       <log4j.version>2.23.1</log4j.version>
       <jgitver-maven-plugin.version>1.9.0</jgitver-maven-plugin.version>
       <maven.resources.version>3.3.1</maven.resources.version>
